@@ -1,0 +1,45 @@
+# Moodle specific ignores
+moodledata/
+config.php
+*.log
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+
+# Log files
+logs/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node modules (if any)
+node_modules/
+
+# Composer
+vendor/
+composer.lock
+
+# Cache
+cache/
+temp/ 

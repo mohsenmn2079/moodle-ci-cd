@@ -33,14 +33,11 @@ jobs:
           # Navigate to the correct directory
           cd /root/moodle-ci-cd/moodle-source
           
-          # Pull latest image
-          docker pull mohsen2079/moodle:latest
-          
           # Stop and remove old containers using docker-compose
           docker-compose down || true
           
-          # Start new containers
-          docker-compose up -d
+          # Start new containers (this will pull the latest image)
+          docker-compose up -d --build
           
           # Clean up old images
           docker image prune -f 

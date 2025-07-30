@@ -96,4 +96,6 @@ ssh root@62.60.210.162 "cd /root/moodle-ci-cd/moodle-source && docker-compose do
 
 ---
 
-**تست CI/CD Pipeline - آخرین به‌روزرسانی: 30 جولای 2025** 
+**تست CI/CD Pipeline - آخرین به‌روزرسانی: 30 جولای 2025**
+
+**تست مجدد - اصلاح Docker Hub credentials** 

@@ -28,7 +28,7 @@ jobs:
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
+        password: ${{ secrets.SERVER_PASSWORD }}
         script: |
           # Pull latest image
           docker pull mohsen2079/moodle:latest

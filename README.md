@@ -13,131 +13,87 @@
 
 ```
 moodle-uni/
-├── Dockerfile              # Docker image برای Moodle
-├── docker-compose.yml      # تنظیمات Docker Compose
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Actions workflow
-├── setup_server.sh         # اسکریپت نصب Docker روی سرور
-├── todo.md                 # راهنمای کامل پروژه
-└── README.md              # این فایل
+├── Dockerfile              # تعریف Docker image برای Moodle
+├── docker-compose.yml      # تنظیمات multi-container application
+├── .github/workflows/      # GitHub Actions workflows
+│   └── deploy.yml         # Workflow برای deploy خودکار
+├── setup_server.sh        # اسکریپت نصب Docker روی سرور
+├── README.md              # مستندات پروژه
+└── .gitignore             # فایل‌های نادیده گرفته شده توسط Git
 ```
 
 ## مراحل راه‌اندازی
 
-### 1. آماده‌سازی سورس کد Moodle
-
-```bash
-# کلون کردن Moodle
-git clone git://git.moodle.org/moodle.git
-cd moodle
-
-# کپی کردن فایل‌های Docker
-cp ../moodle-uni/Dockerfile .
-cp ../moodle-uni/docker-compose.yml .
-cp -r ../moodle-uni/.github .
-```
-
-### 2. نصب Docker روی سرور
-
+### مرحله 1: آماده‌سازی سرور
 ```bash
 # اجرای اسکریپت نصب Docker
 ./setup_server.sh
 ```
 
-### 3. تنظیمات GitHub Secrets
-
-در GitHub repository خود این secrets را اضافه کنید:
+### مرحله 2: تنظیم GitHub Secrets
+در GitHub repository، به Settings > Secrets and variables > Actions بروید و این secrets را اضافه کنید:
 
 - `DOCKER_USERNAME`: نام کاربری Docker Hub
-- `DOCKER_PASSWORD`: رمز عبور Docker Hub
-- `SERVER_HOST`: 62.60.210.162
-- `SERVER_USERNAME`: root
-- `SERVER_SSH_KEY`: کلید SSH سرور
+- `DOCKER_PASSWORD`: رمز عبور یا Personal Access Token Docker Hub
+- `SERVER_HOST`: آدرس سرور (62.60.210.162)
+- `SERVER_USERNAME`: نام کاربری سرور (root)
+- `SERVER_SSH_KEY`: کلید SSH خصوصی برای اتصال به سرور
 
-### 4. راه‌اندازی اولیه
-
+### مرحله 3: تست CI/CD
 ```bash
-# کلون کردن repository روی سرور
-ssh root@62.60.210.162
-git clone https://github.com/your-username/moodle-repo.git
-cd moodle-repo
-
-# اجرای docker-compose
-docker-compose up -d
+# ایجاد تغییر در کد
+git add .
+git commit -m "تست CI/CD pipeline"
+git push origin main
 ```
 
-## نحوه کارکرد CI/CD
+## نحوه کار CI/CD
 
-1. **Push به main branch**: هر بار که کد را به main branch push کنید
-2. **GitHub Actions**: workflow به صورت خودکار اجرا می‌شود
-3. **Build Docker Image**: ایمیج جدید ساخته می‌شود
-4. **Push to Docker Hub**: ایمیج به Docker Hub ارسال می‌شود
-5. **Deploy to Server**: ایمیج جدید روی سرور اجرا می‌شود
+1. **Trigger**: هر بار که کد به branch `main` push شود
+2. **Build**: ساخت Docker image جدید
+3. **Push**: آپلود image به Docker Hub
+4. **Deploy**: اجرای خودکار روی سرور
 
 ## دستورات مفید
 
-### بررسی وضعیت
+### بررسی وضعیت Container ها
 ```bash
-# بررسی containers
-docker-compose ps
-
-# بررسی لاگ‌ها
-docker logs moodle-app
-docker logs moodle-db
-
-# ورود به container
-docker exec -it moodle-app bash
+ssh root@62.60.210.162 "cd /root/moodle-ci-cd/moodle-source && docker ps"
 ```
 
-### Backup و Restore
+### مشاهده Log ها
 ```bash
-# Backup دیتابیس
-docker exec moodle-db mysqldump -u root -p moodle > backup.sql
-
-# Restore دیتابیس
-docker exec -i moodle-db mysql -u root -p moodle < backup.sql
+ssh root@62.60.210.162 "cd /root/moodle-ci-cd/moodle-source && docker-compose logs"
 ```
 
-### مدیریت سرویس‌ها
+### توقف و راه‌اندازی مجدد
 ```bash
-# Restart سرویس‌ها
-docker-compose restart
-
-# Stop سرویس‌ها
-docker-compose down
-
-# Start سرویس‌ها
-docker-compose up -d
+ssh root@62.60.210.162 "cd /root/moodle-ci-cd/moodle-source && docker-compose down && docker-compose up -d"
 ```
-
-## نکات مهم
-
-- حتماً از رمزهای عبور قوی استفاده کنید
-- فایل `config.php` را در volume قرار دهید
-- از backup منظم استفاده کنید
-- SSL certificate نصب کنید
-- فایروال را تنظیم کنید
 
 ## عیب‌یابی
 
-### مشکل اتصال به دیتابیس
-```bash
-# بررسی وضعیت MySQL container
-docker logs moodle-db
+### مشکل اتصال به سرور
+- بررسی دسترسی SSH
+- بررسی تنظیمات firewall
+- بررسی آدرس IP سرور
 
-# بررسی تنظیمات شبکه
-docker network ls
-docker network inspect moodle-uni_default
-```
+### مشکل Docker
+- بررسی نصب Docker
+- بررسی دسترسی‌های کاربر
+- بررسی فضای دیسک
 
-### مشکل دسترسی به فایل‌ها
-```bash
-# تنظیم مجدد مجوزها
-docker exec moodle-app chown -R www-data:www-data /var/www/html/
-docker exec moodle-app chmod -R 755 /var/www/html/
-```
+### مشکل CI/CD
+- بررسی GitHub Secrets
+- بررسی Docker Hub credentials
+- بررسی SSH key
 
-## پشتیبانی
+## اطلاعات تماس
 
-برای سوالات و مشکلات، لطفاً issue در GitHub repository ایجاد کنید. 
+- **توسعه‌دهنده**: Mohsen
+- **آدرس سرور**: 62.60.210.162
+- **Repository**: https://github.com/mohsenmn2079/moodle-ci-cd
+
+---
+
+**تست CI/CD Pipeline - آخرین به‌روزرسانی: 30 جولای 2025** 

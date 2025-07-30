@@ -20,8 +20,8 @@ jobs:
         
     - name: Build and push Docker image
       run: |
-        docker build -t mohsenmn2079/moodle:latest .
-        docker push mohsenmn2079/moodle:latest
+        docker build -t mohsen2079/moodle:latest .
+        docker push mohsen2079/moodle:latest
         
     - name: Deploy to server
       uses: appleboy/ssh-action@v0.1.5
@@ -31,7 +31,7 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
           # Pull latest image
-          docker pull mohsenmn2079/moodle:latest
+          docker pull mohsen2079/moodle:latest
           
           # Stop and remove old containers
           docker stop moodle-app moodle-db || true

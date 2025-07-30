@@ -30,6 +30,9 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          # Navigate to the correct directory
+          cd /root/moodle-ci-cd/moodle-source
+          
           # Pull latest image
           docker pull mohsen2079/moodle:latest
           

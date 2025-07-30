@@ -36,9 +36,8 @@ jobs:
           # Pull latest image
           docker pull mohsen2079/moodle:latest
           
-          # Stop and remove old containers
-          docker stop moodle-app moodle-db || true
-          docker rm moodle-app moodle-db || true
+          # Stop and remove old containers using docker-compose
+          docker-compose down || true
           
           # Start new containers
           docker-compose up -d
